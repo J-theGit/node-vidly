@@ -6,9 +6,9 @@ const debug = require('debug')('app:core');
 
 const app = express();
 
-const index = require('./routes/app');
-const genres = require('./routes/genres');
-const logger = require('./middleware/logger');
+const index = require('../routes/app');
+const genres = require('../routes/genres');
+const logger = require('../middleware/logger');
 
 const port = process.env.PORT || 3000;
 
