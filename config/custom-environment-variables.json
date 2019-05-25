@@ -1,3 +1,4 @@
 {
-    "auth-location": "app-service-file"
+    "auth-location": "app-service-file",
+    "mongo-endpoint": "mongo-url"
 }
