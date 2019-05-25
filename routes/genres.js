@@ -1,49 +1,9 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const genredb = require('../models/genres');
 const Joi = require('joi');
 const debug = require('debug')('app:genres');
-const config = require('config');
 
 const router = express.Router();
-const mongourl = config.get('mongo-endpoint') + '/vidly';
-
-mongoose.connect(mongourl, { useNewUrlParser: true })
-    .then(() => debug('connected to mongo'));
-
-const genreSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        minlength: 3
-    }
-});
-
-const Genres = mongoose.model('Genre', genreSchema);
-
-async function getGenres() {
-    return await Genres.find();
-}
-
-async function getGenre(id) {
-    return await Genres.findById(id);
-}
-
-async function insertGenre(name) {
-    const genre = new Genres();
-    genre.name = name;
-    return await genre.save();
-}
-
-async function updateGenre(id, name) {
-    const genre = await Genres.findById(id);
-    genre.name = name;
-    return await genre.save();
-    //return await Genres.findById(id);
-}
-
-async function deleteGenre(id) {
-    return await Genres.findByIdAndRemove(id);
-}
 
 function validateGenre(input) {
     const schema = {
@@ -54,7 +14,7 @@ function validateGenre(input) {
 
 router.get('/', async function(req, res) {
     try {
-        const results = await getGenres();
+        const results = await genredb.get();
         res.send(results);
     }
     catch (e) {
@@ -64,7 +24,7 @@ router.get('/', async function(req, res) {
 
 router.get('/:id', async (req, res) => {
     try {
-        const genre = await getGenre(req.params.id);
+        const genre = await genredb.get(req.params.id);
         if (!genre) return res.status(404).send('genre couldn\'t be found');
         res.send(genre);
     }
@@ -78,7 +38,7 @@ router.post('/', async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
     
     try {
-        const genre = await insertGenre(req.body.name);
+        const genre = await genredb.set(req.body.name);
         res.send(genre);
     }
     catch (e) {
@@ -92,7 +52,7 @@ router.put('/:id', async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     try {
-        const genre = await updateGenre(req.params.id, req.body.name);
+        const genre = await genredb.update(req.params.id, req.body.name);
         res.send(genre);
     }
     catch (e) {
@@ -102,7 +62,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const genre = await deleteGenre(req.params.id);
+        const genre = await genredb.delete(req.params.id);
         if (!genre) return res.status(404).send('genre couldn\'t be found');
         res.send(genre);
     }
