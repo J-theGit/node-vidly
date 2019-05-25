@@ -9,6 +9,7 @@ const app = express();
 
 const index = require('../routes/app');
 const genres = require('../routes/genres');
+const customers = require ('../routes/customers');
 const logger = require('../middleware/logger');
 
 const port = process.env.PORT || 3000;
@@ -31,9 +32,10 @@ app.use(express.json());
 app.use(logger);
 app.use('/', index);
 app.use('/api/genres', genres);
+app.use('/api/customers', customers);
 
 app.set('view engine', 'pug');
 
 app.listen(port, () => {
-    console.log(`listening on port ${port}`);
+    debug(`listening on port ${port}`);
 });

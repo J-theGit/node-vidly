@@ -8,27 +8,27 @@ const genreSchema = new mongoose.Schema({
     }
 });
 
-const Genres = mongoose.model('Genre', genreSchema);
+const Genre = mongoose.model('Genre', genreSchema);
 
 async function getGenres(id) {
-    if (id) return await Genres.findById(id);
-    return await Genres.find();
+    if (id) return await Genre.findById(id);
+    return await Genre.find();
 }
 
 async function insertGenre(name) {
-    const genre = new Genres();
+    const genre = new Genre();
     genre.name = name;
     return await genre.save();
 }
 
 async function updateGenre(id, name) {
-    const genre = await Genres.findById(id);
+    const genre = await Genre.findById(id);
     genre.name = name;
     return await genre.save();
 }
 
 async function deleteGenre(id) {
-    return await Genres.findByIdAndRemove(id);
+    return await Genre.findByIdAndDelete(id);
 }
 
 
