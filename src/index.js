@@ -10,6 +10,7 @@ const app = express();
 const index = require('../routes/app');
 const genres = require('../routes/genres');
 const customers = require ('../routes/customers');
+const movies = require('../routes/movies');
 const logger = require('../middleware/logger');
 
 const port = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ app.use(logger);
 app.use('/', index);
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
+app.use('/api/movies', movies);
 
 app.set('view engine', 'pug');
 

@@ -36,3 +36,4 @@ module.exports.get = getGenres;
 module.exports.set = insertGenre;
 module.exports.update = updateGenre;
 module.exports.delete = deleteGenre;
+module.exports.Genre = Genre;
