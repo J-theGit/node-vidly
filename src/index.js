@@ -3,6 +3,7 @@ const morgan = require('morgan')('tiny');
 const helmet = require('helmet');
 const config = require('config');
 const debug = require('debug')('app:core');
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -11,6 +12,12 @@ const genres = require('../routes/genres');
 const logger = require('../middleware/logger');
 
 const port = process.env.PORT || 3000;
+
+const mongourl = config.get('mongo-endpoint') + '/vidly';
+
+mongoose.connect(mongourl, { useNewUrlParser: true })
+    .then(() => debug('connected to mongo'))
+    .catch(e => debug(e));
 
 debug(`
 App: ${config.get('app-name')}

@@ -1,11 +1,4 @@
 const mongoose = require('mongoose');
-const debug = require('debug')('app:mongo');
-const config = require('config');
-
-const mongourl = config.get('mongo-endpoint') + '/vidly';
-
-mongoose.connect(mongourl, { useNewUrlParser: true })
-    .then(() => debug('connected to mongo'));
 
 const genreSchema = new mongoose.Schema({
     name: {
@@ -32,7 +25,6 @@ async function updateGenre(id, name) {
     const genre = await Genres.findById(id);
     genre.name = name;
     return await genre.save();
-    //return await Genres.findById(id);
 }
 
 async function deleteGenre(id) {
