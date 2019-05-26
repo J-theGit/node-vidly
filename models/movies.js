@@ -39,6 +39,8 @@ async function getMovies(id) {
 
 async function insertMovies(obj) {
     const genre = await Genre.findById(obj.genreId);
+    if (!genre) return false;
+
     const movie = new Movie({
         title: obj.title,
         genre: new Genre({ 
@@ -53,18 +55,20 @@ async function insertMovies(obj) {
 
 async function updateMovie(id, obj) {
     const movie = await Movie.findById(id);
-
-    movie.title = obj.title ? obj.title : movie.title;
-    movie.numberInStock = obj.numberInStock ? obj.numberInStock : movie.numberInStock;
-    movie.dailyRentalRate = obj.dailyRentalRate ? obj.dailyRentalRate : movie.dailyRentalRate;
+    if (!movie) return { error: 'movie wasn\'t found'};
 
     if (obj.genreId) {
         const genre = await Genre.findById(obj.genreId);
-        if (!genre) return false;
+        if (!genre) return { error: 'genre wasn\'t found'};
 
         movie.genre._id = genre._id;
         movie.genre.name = genre.name;
     }
+    
+    movie.title = obj.title ? obj.title : movie.title;
+    movie.numberInStock = obj.numberInStock ? obj.numberInStock : movie.numberInStock;
+    movie.dailyRentalRate = obj.dailyRentalRate ? obj.dailyRentalRate : movie.dailyRentalRate;
+
 
     return await movie.save();
 }
