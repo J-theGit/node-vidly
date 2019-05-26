@@ -46,3 +46,4 @@ module.exports.get = getCustomers;
 module.exports.set = insertCustomer;
 module.exports.update = updateCustomer;
 module.exports.delete = deleteCustomer;
+module.exports.Customer = Customer;

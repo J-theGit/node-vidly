@@ -60,7 +60,7 @@ async function updateMovie(id, obj) {
 
     if (obj.genreId) {
         const genre = await Genre.findById(obj.genreId);
-        if (!genre) return null;
+        if (!genre) return false;
 
         movie.genre._id = genre._id;
         movie.genre.name = genre.name;
@@ -76,3 +76,4 @@ module.exports.get = getMovies;
 module.exports.set = insertMovies;
 module.exports.update = updateMovie;
 module.exports.delete = deleteMovie;
+module.exports.Movie = Movie;

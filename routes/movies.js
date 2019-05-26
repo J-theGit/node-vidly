@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
     try {
         const movie = await moviesdb.set(req.body);
-        //if (!movie) return res.status(400).send('genre wasn\'t found');
+        if (!movie) return res.status(400).send('genre wasn\'t found');
     
         res.send(movie);
     }
@@ -58,7 +58,6 @@ router.put('/:id', async (req, res) => {
         res.send(movie);
     }
     catch(e) {
-        debug(e);
         res.status(404).send('movie or genre with provided id was not found');
     }
 });
