@@ -42,30 +42,21 @@ async function getRentals(id) {
 
 async function createRental(obj) {
     const customer = await Customer.findById(obj.customerId);
-    const movies = await getMovies(obj.movieId);
-    if (!movies) throw new Error('one or more movies were not found');
+    if (!customer) throw new Error('customer not found');
 
+    const movies = await getMovies(obj.movieId);
     const rental = new Rental({
         customer: customer._id,
         movie: movies
     });
-    debug('2', movies);
     return await rental.save();
 }
 
 async function getMovies(movies) {
-    movies.forEach(async id => {
-        try {
-            const movie = await Movie.findById(id);
-            if (!movie) {
-                const i = movies.indexOf(id);
-                verifiedMovies.splice(i, 1);
-            }
-        }
-        catch(e) {
-            return false;
-        }
-    });
+    for (id of movies) {
+        const movie = await Movie.findById(id);
+        if (!movie) throw new Error('one or more movies were not found');
+    }
     return await movies;
 }
 

@@ -5,9 +5,9 @@ const router = express.Router();
 
 const rentalSchema = {
     customerId: Joi.objectId().required(),
-    movieId: [
+    movieId: Joi.array().required().items(
         Joi.objectId().required()
-    ]
+    )
 }
 
 function validateRental(input) {
@@ -31,8 +31,8 @@ router.post('/', async (req, res) => {
         const rental = await rentaldb.set(req.body);
         res.send(rental);
     }
-    catch (e) {
-        res.status(400).send('movieId or customerId invalid');
+    catch(e) {
+        res.status(404).send(e.message);
     }
 });
 
