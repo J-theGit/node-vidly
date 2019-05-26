@@ -1,5 +1,5 @@
 const express = require('express');
-const Joi = require('joi');
+const Joi = require('../custom/joi');
 const debug = require('debug')('app:routes:customers');
 const custdb = require('../models/customers');
 

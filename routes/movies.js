@@ -1,5 +1,5 @@
 const express = require('express');
-const Joi = require('joi');
+const Joi = require('../custom/joi');
 const debug = require('debug')('app:routes:movies');
 const moviesdb = require('../models/movies');
 const router = express.Router();

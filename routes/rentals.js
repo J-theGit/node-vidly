@@ -1,12 +1,15 @@
 const express = require('express');
 const rentaldb = require('../models/rentals');
-const Joi = require('Joi');
+const Joi = require('../custom/joi');
 const router = express.Router();
 
 const rentalSchema = {
-    customerId: Joi.string().required().min(3).max(255),
-    movieId: Joi.array().required()
+    customerId: Joi.objectId().required(),
+    movieId: [
+        Joi.objectId().required()
+    ]
 }
+
 function validateRental(input) {
     return Joi.validate(input,rentalSchema);
 }

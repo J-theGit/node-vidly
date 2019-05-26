@@ -1,6 +1,6 @@
 const express = require('express');
 const genredb = require('../models/genres');
-const Joi = require('joi');
+const Joi = require('../custom/joi');
 const debug = require('debug')('app:routes:genres');
 
 const router = express.Router();
