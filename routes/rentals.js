@@ -1,4 +1,5 @@
 const express = require('express');
+const debug = require('debug')('app:routes:rentals');
 const rentaldb = require('../models/rentals');
 const Joi = require('../custom/joi');
 const router = express.Router();
@@ -27,12 +28,14 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const { error } = validateRental(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+
     try {
         const rental = await rentaldb.set(req.body);
         res.send(rental);
     }
     catch(e) {
-        res.status(404).send(e.message);
+        res.status(400).send(e.message);
+        debug(e);
     }
 });
 

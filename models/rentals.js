@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const debug = require('debug')('app:models:rentals');
 const { Movie } = require('./movies');
 const { Customer } = require('./customers');
+const Fawn = require('fawn');
+Fawn.init(mongoose);
 
 const rentalSchema = new mongoose.Schema({
     customer: {
@@ -32,8 +34,8 @@ const Rental = mongoose.model('Rental', rentalSchema);
 async function getRentals(id) {
     if (id) 
         return await Rental.findById(id)
-        .populate('movie')
-        .populate('customer');
+            .populate('movie')
+            .populate('customer');
 
     return await Rental.find()
         .populate('movie')
@@ -47,17 +49,37 @@ async function createRental(obj) {
     const movies = await getMovies(obj.movieId);
     const rental = new Rental({
         customer: customer._id,
-        movie: movies
+        movie: obj.movieId
     });
-    return await rental.save();
+
+    try {
+        const task = new Fawn.Task()
+            .save('rentals', rental);
+
+        for (movie of movies) 
+            task.update('movies', { _id:movie._id }, 
+            { 
+                $inc: { numberInStock: -1 } 
+            });
+
+        await task.run();
+    }
+    catch (e) {
+        throw new Error('Rental was not saved, something went wrong');
+    }
+
+    return await rental;
 }
 
 async function getMovies(movies) {
-    for (id of movies) {
+    const result = [];
+    for await (id of movies) {
         const movie = await Movie.findById(id);
         if (!movie) throw new Error('one or more movies were not found');
+        if (movie.numberInStock < 1) throw new Error(`movie ${movie._id} is out of stock`);
+        result.push(movie);
     }
-    return await movies;
+    return result;
 }
 
 module.exports.get = getRentals;

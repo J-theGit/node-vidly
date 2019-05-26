@@ -60,3 +60,7 @@ typings/
 
 # next.js build output
 .next
+
+# environment init files
+env.bat
+env.sh
