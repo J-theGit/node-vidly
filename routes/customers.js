@@ -2,6 +2,7 @@ const express = require('express');
 const Joi = require('../custom/joi');
 const debug = require('debug')('app:routes:customers');
 const custdb = require('../models/customers');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/:id', async (req, res) => {
 
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const { error } = validateCustomer(req.body)
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -51,7 +52,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     let { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
     
@@ -69,7 +70,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
