@@ -3,14 +3,24 @@ const morgan = require('morgan')('tiny');
 const helmet = require('helmet');
 const config = require('config');
 const debug = require('debug')('app:core');
+const mongoose = require('mongoose');
 
 const app = express();
 
 const index = require('../routes/app');
 const genres = require('../routes/genres');
+const customers = require ('../routes/customers');
+const movies = require('../routes/movies');
+const rentals = require('../routes/rentals');
 const logger = require('../middleware/logger');
 
 const port = process.env.PORT || 3000;
+
+const mongourl = config.get('mongo-endpoint') + '/vidly';
+
+mongoose.connect(mongourl, { useNewUrlParser: true })
+    .then(() => debug('connected to mongo'))
+    .catch(e => debug(e));
 
 debug(`
 App: ${config.get('app-name')}
@@ -24,9 +34,12 @@ app.use(express.json());
 app.use(logger);
 app.use('/', index);
 app.use('/api/genres', genres);
+app.use('/api/customers', customers);
+app.use('/api/movies', movies);
+app.use('/api/rentals', rentals);
 
 app.set('view engine', 'pug');
 
 app.listen(port, () => {
-    console.log(`listening on port ${port}`);
+    debug(`listening on port ${port}`);
 });
