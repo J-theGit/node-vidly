@@ -26,10 +26,10 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const { error } = validateId(req.params);
-    if (error) res.status(400).send(error.message);
+    if (error) return res.status(400).send(error.message);
 
     const rental = await rentaldb.get(req.params.id);
-    if  (!rental) res.status(404).send('Requested rental was not found');
+    if  (!rental) return res.status(404).send('Requested rental was not found');
     res.send(rental);
 });
 
@@ -43,7 +43,6 @@ router.post('/', async (req, res) => {
     }
     catch(e) {
         res.status(400).send(e.message);
-        debug(e);
     }
 });
 

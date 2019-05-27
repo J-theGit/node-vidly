@@ -65,7 +65,7 @@ router.put('/:id', async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     error = validateUpdateMovie(req.body).error;
-    if (error) res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send(error.details[0].message);
 
     try {
         const movie = await moviesdb.update(req.params.id, req.body);
@@ -82,10 +82,15 @@ router.delete('/:id', async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
     
-    const movie = await moviesdb.delete(req.params.id);
-    if (!movie) return res.status(404).send('movie with this id does not exist');
-    
-    res.send(movie);
+    try{
+        const movie = await moviesdb.delete(req.params.id);
+        if (!movie) return res.status(404).send('movie with this id does not exist');
+        
+        res.send(movie);
+    }
+    catch(e) {
+        res.status(500).send('Internal error occured, movie wasn\'t inserted');
+    }
 });
 
 module.exports = router;

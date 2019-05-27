@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
         res.send(genre);
     }
     catch (e) {
-        return res.status(500).send('unable to insert genre');
+        res.status(500).send('Internal error occured, genre wasn\'t inserted');
     }
 });
 
@@ -66,10 +66,15 @@ router.delete('/:id', async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const genre = await genredb.delete(req.params.id);
-    if (!genre) return res.status(404).send('genre couldn\'t be found');
-
-    res.send(genre);
+    try{
+        const genre = await genredb.delete(req.params.id);
+        if (!genre) return res.status(404).send('genre couldn\'t be found');
+    
+        res.send(genre);
+    }
+    catch(e) {
+        res.status(500).send('Internal error occured, genre wasn\'t deleted');
+    }
 });
 
 module.exports = router;
