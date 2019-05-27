@@ -14,6 +14,7 @@ const movies = require('../routes/movies');
 const rentals = require('../routes/rentals');
 const users = require('../routes/users');
 const logger = require('../middleware/logger');
+const auth = require('../routes/auth');
 
 const port = process.env.PORT || 3000;
 
@@ -26,7 +27,7 @@ mongoose.connect(mongourl, { useNewUrlParser: true , useCreateIndex: true })
 debug(`
 App: ${config.get('app-name')}
 Env: ${config.get('environment')}
-Auth used: ${config.get('auth-location')}`);
+Auth location used: ${config.get('private-key')}`);
 
 if (app.get('env') === 'development') app.use(morgan);
 
@@ -39,6 +40,7 @@ app.use('/api/customers', customers);
 app.use('/api/movies', movies);
 app.use('/api/rentals', rentals);
 app.use('/api/users', users);
+app.use('/api/auth', auth);
 
 app.set('view engine', 'pug');
 

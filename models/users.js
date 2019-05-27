@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const mongoose = require('mongoose');
 const debug = require('debug')('app:models:users');
 const crypto = require('crypto');
@@ -22,13 +23,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 6,
-        maxlength: 50
+        maxlength: 255
     },
     salt: {
         type: String,
         required: true,
         minlength:6,
-        maxlength:50
+        maxlength:255
     }
 });
 
@@ -41,9 +42,9 @@ async function createUser(input) {
     const existingEmail = await User.findOne({ email: input.email });
     if (existingEmail) throw new Error(`Email ${input.email} already exists`)
 
-    const salt = cryptoString({ length: 15, type: 'base64' });
-    const hash = crypto.createHash('sha256').update(input.password).digest('base64');
-    const password = crypto.createHash('sha256').update(salt+hash+salt).digest('base64');
+    const salt = cryptoString({ length: 15, type: 'hex' });
+    const hash = crypto.createHash('sha256').update(input.password).digest('hex');
+    const password = crypto.createHash('sha256').update(salt+hash+salt).digest('hex');
 
     const user = new User({ 
         name: input.name,
@@ -54,7 +55,7 @@ async function createUser(input) {
     try {
 
         await user.save();
-        return { _id: user._id, name: user.name };
+        return _.pick(user,['_id', 'name']);
     }
     catch (e) {
         debug(e);
@@ -63,3 +64,4 @@ async function createUser(input) {
 }
 
 module.exports.set = createUser;
+module.exports.User = User;

@@ -67,3 +67,6 @@ env.sh
 
 #vscode
 .vscode/
+
+#key
+private.key
