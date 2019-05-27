@@ -4,25 +4,33 @@ const rentaldb = require('../models/rentals');
 const Joi = require('../custom/joi');
 const router = express.Router();
 
-const rentalSchema = {
-    customerId: Joi.objectId().required(),
-    movieId: Joi.array().required().items(
-        Joi.objectId().required()
-    )
-}
-
 function validateRental(input) {
-    return Joi.validate(input,rentalSchema);
+    const schema = {
+        customerId: Joi.objectId().required(),
+        movieId: Joi.array().required().items(
+            Joi.objectId().required()
+        )
+    }
+    return Joi.validate(input, schema);
 }
-
+function validateId(input) {
+    const schema = {
+        id: Joi.objectId().required()
+    }
+    return Joi.validate(input, schema);
+}
 router.get('/', async (req, res) => {
     const rentals = await rentaldb.get();
     res.send(rentals);
 });
 
 router.get('/:id', async (req, res) => {
-    const rentals = await rentaldb.get(req.params.id);
-    res.send(rentals);
+    const { error } = validateId(req.params);
+    if (error) res.status(400).send(error.message);
+
+    const rental = await rentaldb.get(req.params.id);
+    if  (!rental) res.status(404).send('Requested rental was not found');
+    res.send(rental);
 });
 
 router.post('/', async (req, res) => {
