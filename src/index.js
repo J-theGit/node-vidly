@@ -13,7 +13,6 @@ const customers = require ('../routes/customers');
 const movies = require('../routes/movies');
 const rentals = require('../routes/rentals');
 const users = require('../routes/users');
-const logger = require('../middleware/logger');
 const auth = require('../routes/auth');
 
 const port = process.env.PORT || 3000;
@@ -33,7 +32,6 @@ if (app.get('env') === 'development') app.use(morgan);
 
 app.use(helmet());
 app.use(express.json());
-app.use(logger);
 app.use('/', index);
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
