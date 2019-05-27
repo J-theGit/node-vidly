@@ -4,19 +4,32 @@ const debug = require('debug')('app:routes:movies');
 const moviesdb = require('../models/movies');
 const router = express.Router();
 
-const createMovieSchema = {
-    title: Joi.string().required().min(3).max(300),
-    genreId: Joi.objectId().required(),
-    numberInStock: Joi.number().min(0).max(999),
-    dailyRentalRate: Joi.number().min(0).max(999)
-};
+function validateCreateMovie(input) {
+    const schema = {
+        title: Joi.string().required().min(3).max(300),
+        genreId: Joi.objectId().required(),
+        numberInStock: Joi.number().min(0).max(999),
+        dailyRentalRate: Joi.number().min(0).max(999)
+    }
+    return Joi.validate(input, schema);
+}
 
-const updateMovieSchema = {
-    title: Joi.string().min(3).max(300),
-    genreId: Joi.objectId(),
-    numberInStock: Joi.number().min(0).max(999),
-    dailyRentalRate: Joi.number().min(0).max(999)
-};
+function validateUpdateMovie(input) {
+    const schema = {
+        title: Joi.string().min(3).max(300),
+        genreId: Joi.objectId(),
+        numberInStock: Joi.number().min(0).max(999),
+        dailyRentalRate: Joi.number().min(0).max(999)
+    }
+    return Joi.validate(input, schema);
+}
+
+function validateId(input) {
+    const schema = {
+        id: Joi.objectId().required()
+    }
+    return Joi.validate(input, schema);
+}
 
 router.get('/', async (req, res) => {
     const movies = await moviesdb.get();
@@ -24,9 +37,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const { error } = Joi.validate(req.params, {
-        id: Joi.objectId().required()
-    });
+    const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
     const movie = await moviesdb.get(req.params.id);
@@ -37,45 +48,44 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { error } = Joi.validate(req.body, createMovieSchema);
+    const { error } = validateCreateMovie(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const movie = await moviesdb.set(req.body);
-    if (!movie) return res.status(400).send('genre wasn\'t found');
-
-    res.send(movie);
-
+    try {
+        const movie = await moviesdb.set(req.body);
+        res.send(movie);
+    }
+    catch(e) {
+        res.status(400).send(e.message)
+    }
 });
 
 router.put('/:id', async (req, res) => {
-    let { error } = Joi.validate(req.params, {
-        id: Joi.objectId().required()
-    });
-    if (error) {
-        debug('error');
-        return res.status(400).send(error.details[0].message);
-    }
+    let { error } = validateId(req.params);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    error = Joi.validate(req.body, updateMovieSchema).error;
+    error = validateUpdateMovie(req.body).error;
     if (error) res.status(400).send(error.details[0].message);
 
-    const movie = await moviesdb.update(req.params.id, req.body);
-    if (movie.error) return res.status(404).send(movie.error);
-
-    res.send(movie);
+    try {
+        const movie = await moviesdb.update(req.params.id, req.body);
+        if (movie.error) return res.status(404).send(movie.error);
+    
+        res.send(movie);
+    }
+    catch(e) {
+        res.status(400).send(e.message);
+    }
 });
 
 router.delete('/:id', async (req, res) => {
-    const { error } = Joi.validate(req.params, {
-        id: Joi.objectId().required()
-    });
+    const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
     
     const movie = await moviesdb.delete(req.params.id);
     if (!movie) return res.status(404).send('movie with this id does not exist');
-    res.send(movie);
     
-
+    res.send(movie);
 });
 
 module.exports = router;

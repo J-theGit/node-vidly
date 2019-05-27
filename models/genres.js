@@ -23,6 +23,8 @@ async function insertGenre(name) {
 
 async function updateGenre(id, name) {
     const genre = await Genre.findById(id);
+    if (!genre) throw new Error('genre couldn\'t be found');
+
     genre.name = name;
     return await genre.save();
 }

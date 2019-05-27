@@ -39,7 +39,7 @@ async function getMovies(id) {
 
 async function insertMovies(obj) {
     const genre = await Genre.findById(obj.genreId);
-    if (!genre) return false;
+    if (!genre) throw new Error("Genre with provided id was not found");
 
     const movie = new Movie({
         title: obj.title,
@@ -55,11 +55,11 @@ async function insertMovies(obj) {
 
 async function updateMovie(id, obj) {
     const movie = await Movie.findById(id);
-    if (!movie) return { error: 'movie wasn\'t found'};
+    if (!movie) throw new Error('movie wasn\'t found');
 
     if (obj.genreId) {
         const genre = await Genre.findById(obj.genreId);
-        if (!genre) return { error: 'genre wasn\'t found'};
+        if (!genre) throw new Error('genre wasn\'t found');
 
         movie.genre._id = genre._id;
         movie.genre.name = genre.name;
