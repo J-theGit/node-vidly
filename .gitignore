@@ -64,3 +64,6 @@ typings/
 # environment init files
 env.bat
 env.sh
+
+#vscode
+.vscode/
