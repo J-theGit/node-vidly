@@ -12,13 +12,14 @@ const genres = require('../routes/genres');
 const customers = require ('../routes/customers');
 const movies = require('../routes/movies');
 const rentals = require('../routes/rentals');
+const users = require('../routes/users');
 const logger = require('../middleware/logger');
 
 const port = process.env.PORT || 3000;
 
 const mongourl = config.get('mongo-endpoint') + '/vidly';
 
-mongoose.connect(mongourl, { useNewUrlParser: true })
+mongoose.connect(mongourl, { useNewUrlParser: true , useCreateIndex: true })
     .then(() => debug('connected to mongo'))
     .catch(e => debug(e));
 
@@ -37,6 +38,7 @@ app.use('/api/genres', genres);
 app.use('/api/customers', customers);
 app.use('/api/movies', movies);
 app.use('/api/rentals', rentals);
+app.use('/api/users', users);
 
 app.set('view engine', 'pug');
 

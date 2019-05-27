@@ -1,5 +1,6 @@
 const express = require('express');
 const userdb = require('../models/users');
+const debug = require('debug')('app:routes:users');
 const Joi = require('joi');
 
 const router = express.Router();
@@ -22,6 +23,8 @@ router.post('/', async (req, res) => {
         res.send(user)
     }
     catch(e) {
-        res.status(500).send('Internal error occured, user was not created');
+        res.status(500).send(`User was not created. ${e.message}`);
     }
 });
+
+module.exports = router;
