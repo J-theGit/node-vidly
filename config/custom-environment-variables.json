@@ -1,4 +1,4 @@
 {
-    "auth-location": "app-service-file",
+    "private-key": "app-service-file",
     "mongo-endpoint": "mongo-url"
 }

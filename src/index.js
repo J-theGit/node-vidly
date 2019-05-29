@@ -12,31 +12,32 @@ const genres = require('../routes/genres');
 const customers = require ('../routes/customers');
 const movies = require('../routes/movies');
 const rentals = require('../routes/rentals');
-const logger = require('../middleware/logger');
+const users = require('../routes/users');
+const auth = require('../routes/auth');
 
 const port = process.env.PORT || 3000;
 
 const mongourl = config.get('mongo-endpoint') + '/vidly';
-
-mongoose.connect(mongourl, { useNewUrlParser: true })
+mongoose.connect(mongourl, { useNewUrlParser: true , useCreateIndex: true })
     .then(() => debug('connected to mongo'))
     .catch(e => debug(e));
 
 debug(`
 App: ${config.get('app-name')}
 Env: ${config.get('environment')}
-Auth used: ${config.get('auth-location')}`);
+Auth location used: ${config.get('private-key')}`);
 
 if (app.get('env') === 'development') app.use(morgan);
 
 app.use(helmet());
 app.use(express.json());
-app.use(logger);
 app.use('/', index);
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
 app.use('/api/movies', movies);
 app.use('/api/rentals', rentals);
+app.use('/api/users', users);
+app.use('/api/auth', auth);
 
 app.set('view engine', 'pug');
 
