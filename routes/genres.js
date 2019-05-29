@@ -1,8 +1,9 @@
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const express = require('express');
 const genredb = require('../models/genres');
 const Joi = require('../custom/joi');
 const debug = require('debug')('app:routes:genres');
-const auth = require('../middleware/auth');
 const router = express.Router();
 
 
@@ -34,7 +35,7 @@ router.get('/:id', async (req, res) => {
     res.send(genre);
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, admin, async (req, res) => {
     const { error } = validateGenre(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     
@@ -47,7 +48,7 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, admin, async (req, res) => {
     let { error } = validateGenre(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     
@@ -63,7 +64,7 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, admin, async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 

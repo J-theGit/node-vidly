@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         minlength: 3,
         maxlength: 30
     },
+    admin: {
+        type: Boolean,
+        default: false
+    },
     password: {
         type: String,
         required: true,
@@ -41,6 +45,7 @@ userSchema.methods.generateToken = async function() {
     return jwt.sign({
         id: this._id,
         user: this.name,
+        admin: this.admin,
         exp: Math.floor(Date.now() / 1000) + (60 * 60),
     }, key);
 }
@@ -76,7 +81,7 @@ async function createUser(input) {
 
 async function getUser(id) {
     return await User.findById(id)
-        .select(['_id', 'name', 'email']);
+        .select('-password -salt');
 }
 
 module.exports.set = createUser;

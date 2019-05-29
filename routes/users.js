@@ -24,6 +24,7 @@ router.get('/me', auth, async (req, res) => {
     }
 });
 
+//register
 router.post('/', async (req, res) => {
     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);

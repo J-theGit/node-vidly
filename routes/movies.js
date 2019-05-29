@@ -1,8 +1,9 @@
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const express = require('express');
 const Joi = require('../custom/joi');
 const debug = require('debug')('app:routes:movies');
 const moviesdb = require('../models/movies');
-const auth = require('../middleware/auth');
 const router = express.Router();
 
 function validateCreateMovie(input) {
@@ -79,7 +80,7 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, admin, async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
     
