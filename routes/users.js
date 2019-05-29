@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const express = require('express');
 const userdb = require('../models/users');
 const debug = require('debug')('app:routes:users');
@@ -13,6 +14,15 @@ function validateUser(input) {
     }
     return Joi.validate(input, schema);
 }
+router.get('/me', auth, async (req, res) => {
+    try {
+        const user = await userdb.get(req.user.id);
+        res.send(user);
+    }
+    catch(e) {
+        res.status(500).send('Internal error occured');
+    }
+});
 
 router.post('/', async (req, res) => {
     const { error } = validateUser(req.body);

@@ -40,7 +40,8 @@ userSchema.methods.generateToken = async function() {
     const key = config.get('private-key');
     return jwt.sign({
         id: this._id,
-        user: this.name
+        user: this.name,
+        exp: Math.floor(Date.now() / 1000) + (60 * 60),
     }, key);
 }
 
@@ -73,5 +74,11 @@ async function createUser(input) {
     }
 }
 
+async function getUser(id) {
+    return await User.findById(id)
+        .select(['_id', 'name', 'email']);
+}
+
 module.exports.set = createUser;
+module.exports.get = getUser;
 module.exports.User = User;

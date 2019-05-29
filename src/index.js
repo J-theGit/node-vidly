@@ -18,7 +18,6 @@ const auth = require('../routes/auth');
 const port = process.env.PORT || 3000;
 
 const mongourl = config.get('mongo-endpoint') + '/vidly';
-
 mongoose.connect(mongourl, { useNewUrlParser: true , useCreateIndex: true })
     .then(() => debug('connected to mongo'))
     .catch(e => debug(e));
