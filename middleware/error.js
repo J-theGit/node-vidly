@@ -5,8 +5,8 @@ function error(err, req, res, next) {
     res.status(500).send('Internal error');
 
     debug(err);
-    if (err.message) winston.error(err.message,err);
-    else winston.error(err);
+    winston.error(err.message);
+
 }
 
 module.exports = error;

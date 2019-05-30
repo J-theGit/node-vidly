@@ -4,7 +4,7 @@ require('express-async-errors');
 const morgan = require('morgan')('tiny');
 const helmet = require('helmet');
 const winston = require('winston');
-winston.add(new winston.transports.File({ filename: 'app.log' }));
+require('winston-mongodb');
 const config = require('config');
 const debug = require('debug')('app:core');
 const mongoose = require('mongoose');
@@ -26,8 +26,20 @@ const port = process.env.PORT || 3000;
 
 const mongourl = config.get('mongo-endpoint') + '/vidly';
 mongoose.connect(mongourl, { useNewUrlParser: true , useCreateIndex: true })
-    .then(() => debug('connected to mongo'))
-    .catch(e => debug(e));
+.then(() => debug('connected to mongo'))
+.catch(e => debug(e));
+
+winston.add(new winston.transports.File({ filename: 'app.log' }));
+winston.add(new winston.transports.MongoDB({ db: mongourl, level: 'error' }));
+
+process.on('uncaughtException', e => {
+    winston.error(e.message);
+    process.exit(1);
+});
+process.on('unhandledRejection', e => {
+    winston.error(e.message);
+    process.exit(1);
+});
 
 debug(`
 App: ${config.get('app-name')}

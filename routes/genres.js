@@ -22,7 +22,6 @@ function validateId(input) {
 }
 
 router.get('/', async function(req, res) {
-    //await Promise.reject('failed');
     const results = await genredb.get();
     res.send(results);
 });
