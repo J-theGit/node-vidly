@@ -4,6 +4,7 @@ require('express-async-errors');
 const morgan = require('morgan')('tiny');
 const helmet = require('helmet');
 const winston = require('winston');
+winston.add(new winston.transports.File({ filename: 'app.log' }));
 const config = require('config');
 const debug = require('debug')('app:core');
 const mongoose = require('mongoose');
