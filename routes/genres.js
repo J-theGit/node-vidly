@@ -1,5 +1,6 @@
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const trycatch = require('../middleware/trycatch');
 const express = require('express');
 const genredb = require('../models/genres');
 const Joi = require('../custom/joi');
@@ -21,21 +22,21 @@ function validateId(input) {
     return Joi.validate(input, schema);
 }
 
-router.get('/', async function(req, res) {
+router.get('/', trycatch(async function(req, res) {
     const results = await genredb.get();
     res.send(results);
-});
+}));
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', trycatch(async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
     const genre = await genredb.get(req.params.id);
     if (!genre) return res.status(404).send('genre couldn\'t be found');
     res.send(genre);
-});
+}));
 
-router.post('/', auth, admin, async (req, res) => {
+router.post('/', auth, admin, trycatch(async (req, res) => {
     const { error } = validateGenre(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     
@@ -46,9 +47,9 @@ router.post('/', auth, admin, async (req, res) => {
     catch (e) {
         res.status(500).send('Internal error occured, genre wasn\'t inserted');
     }
-});
+}));
 
-router.put('/:id', auth, admin, async (req, res) => {
+router.put('/:id', auth, admin, trycatch(async (req, res) => {
     let { error } = validateGenre(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     
@@ -62,9 +63,9 @@ router.put('/:id', auth, admin, async (req, res) => {
     catch (e) {
         res.status(404).send(e.message);
     }
-});
+}));
 
-router.delete('/:id', auth, admin, async (req, res) => {
+router.delete('/:id', auth, admin, trycatch(async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -77,6 +78,6 @@ router.delete('/:id', auth, admin, async (req, res) => {
     catch(e) {
         res.status(500).send('Internal error occured, genre wasn\'t deleted');
     }
-});
+}));
 
 module.exports = router;
