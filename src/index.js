@@ -1,10 +1,14 @@
 const express = require('express');
 require('express-async-errors');
+
 const morgan = require('morgan')('tiny');
 const helmet = require('helmet');
+const winston = require('winston');
 const config = require('config');
 const debug = require('debug')('app:core');
 const mongoose = require('mongoose');
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const app = express();
 
