@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 const morgan = require('morgan')('tiny');
 const helmet = require('helmet');
 const config = require('config');
