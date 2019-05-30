@@ -2,7 +2,7 @@ const auth = require('../middleware/auth');
 const express = require('express');
 const debug = require('debug')('app:routes:rentals');
 const rentaldb = require('../models/rentals');
-const Joi = require('../custom/joi');
+const Joi = require('joi');
 const router = express.Router();
 
 function validateRental(input) {

@@ -1,6 +1,6 @@
 const debug = require('debug')('app:routes:auth');
 const express = require('express');
-const Joi = require('../custom/joi');
+const Joi = require('joi');
 const authdb = require('../models/auth');
 const router = express.Router();
 
