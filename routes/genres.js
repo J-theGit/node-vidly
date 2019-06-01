@@ -2,7 +2,7 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const express = require('express');
 const genredb = require('../models/genres');
-const Joi = require('../custom/joi');
+const Joi = require('joi');
 const debug = require('debug')('app:routes:genres');
 const router = express.Router();
 
