@@ -6,7 +6,7 @@ const { User } = require('../../../models/users');
 describe('generateToken', () => {
     it('should throw when key is invalid', () => {
         const user = new User({name: 'jev'})
-        const key = '123';
+        const key = '1';
         const token = user.generateToken();
         expect(() => jwt.verify(token, key)).toThrow();
     });

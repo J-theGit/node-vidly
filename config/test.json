@@ -1,3 +1,6 @@
 {
-    "environment": "test"
+    "environment": "test",
+    "private-key": "123",
+    "mongo-endpoint": "mongodb://localhost/",
+    "mongo-database": "integration-tests"
 }
