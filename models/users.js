@@ -4,7 +4,6 @@ const debug = require('debug')('app:models:users');
 const crypto = require('crypto');
 const cryptoString = require('crypto-random-string');
 const config = require('config');
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
@@ -40,7 +39,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.methods.generateToken = async function() {
+userSchema.methods.generateToken = function() {
     const key = config.get('private-key');
     return jwt.sign({
         id: this._id,
