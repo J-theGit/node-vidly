@@ -4,7 +4,8 @@ const genreSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        minlength: 3
+        minlength: 5,
+        maxlength: 50
     }
 });
 
@@ -32,7 +33,6 @@ async function updateGenre(id, name) {
 async function deleteGenre(id) {
     return await Genre.findByIdAndDelete(id);
 }
-
 
 module.exports.get = getGenres;
 module.exports.set = insertGenre;

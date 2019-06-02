@@ -2,5 +2,5 @@
     "environment": "test",
     "private-key": "123",
     "mongo-endpoint": "mongodb://localhost/",
-    "mongo-database": "integration-tests"
+    "mongo-database": "vidly-tests"
 }
