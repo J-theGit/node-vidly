@@ -79,6 +79,7 @@ describe('/api/genres', () => {
         it('should return 401 when unauthorised', async () => {
             token = '';
             const res = await exec();
+
             expect(res.status).toBe(401);
         });
 
@@ -122,6 +123,130 @@ describe('/api/genres', () => {
             const find = await Genre.findById(res.body._id);
     
             expect(find.name).toBe('genre1');
+        });
+    });
+    describe('PUT /:id', () => {
+        let id;
+        let name;
+        let token;
+
+        beforeEach(async () => {
+            token = new User( { admin: true }).generateToken();
+            id = mongoose.Types.ObjectId().toHexString();
+            name = 'genre2';
+
+            // insert to db before testing
+            const genre = new Genre({ 
+                _id: id, 
+                name: 'genre1' 
+            });
+            await genre.save();
+        });
+
+        afterEach(async () => {
+            await Genre.deleteMany();
+        });
+
+        function exec() {
+            return request(server)
+                .put('/api/genres/'+id)
+                .set('x-auth-token', token)
+                .send({ name });
+        }
+        it('should return the updated genre with valid id and properties', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({ _id: id, name: 'genre2' });
+        });
+
+        it('should contain the updated genre in database', async () => {
+            await exec();
+            const genre = await Genre.findById(id);
+
+            expect(genre._id.toHexString()).toBe(id);
+            expect(genre.name).toBe('genre2');
+        });
+
+        it('should return 400 when id is invalid format', async () => {
+            id = 1
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 when name is 4 characters', async () => {
+            name = 'aaaa'
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 when name is 51 characters', async () => {
+            name = Array(52).join('a');
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 404 when genre wasnt found', async () => {
+            id = mongoose.Types.ObjectId().toHexString();
+            const res = await exec();
+
+            expect(res.status).toBe(404);
+        });
+    });
+
+    describe('DELETE /:id', () => {
+        let id;
+        let token;
+
+        beforeEach(async () => {
+            token = new User( { admin: true }).generateToken();
+            id = mongoose.Types.ObjectId().toHexString();
+
+            // insert to db before testing
+            const genre = new Genre({ 
+                _id: id, 
+                name: 'genre1' 
+            });
+            await genre.save();
+        });
+
+        afterEach(async () => {
+            await Genre.deleteMany();
+        });
+
+        function exec() {
+            return request(server)
+                .delete('/api/genres/'+id)
+                .set('x-auth-token', token)
+        }
+
+        it('should return the deleted genre with valid id and properties', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({ _id: id, name: 'genre1' });
+        });
+
+        it('should not contain the deleted genre in database', async () => {
+            await exec();
+            const genre = await Genre.findById(id);
+
+            expect(genre).toBeNull();
+        });
+
+        it('should return 400 when id is invalid format', async () => {
+            id = 1
+            const res = await exec();
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 404 when genre wasnt found', async () => {
+            id = mongoose.Types.ObjectId().toHexString();
+            const res = await exec();
+            expect(res.status).toBe(404);
         });
     });
 });
