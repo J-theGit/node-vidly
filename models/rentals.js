@@ -84,3 +84,4 @@ async function getMovies(movies) {
 
 module.exports.get = getRentals;
 module.exports.set = createRental;
+module.exports.Rental = Rental;
