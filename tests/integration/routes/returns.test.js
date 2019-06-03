@@ -79,14 +79,16 @@ describe('/api/returns', () => {
         it('should set dateReturned as current date when valid return is made', async () => {
             await exec();
             const returns = await Rental.findById(rentalId);
-            
+
             expect(returns.dateReturned).not.toBeNull();
         });
 
         it('should set rentalFee as 15.40 when valid return is made', async () => {
             const res = await exec();
+            const rental = await Rental.findById(rentalId);
 
             expect(res.body.rentalFee).toBeCloseTo(15.4);
+            expect(rental.rentalFee).toBeCloseTo(15.4);
         });
 
         it('should increase movie stock and return 1 when valid return is made', async () => {
