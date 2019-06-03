@@ -46,7 +46,6 @@ router.get('/:id', async (req, res) => {
     if (!movie) return res.status(404).send('movie with this id was not found');
 
     res.send(movie);
-
 });
 
 router.post('/', auth, async (req, res) => {

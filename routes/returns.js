@@ -17,7 +17,8 @@ router.post('/:id', auth, async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     const rental = await rentals.submit(req.params.id);
-    if (!rental) return res.status(400).send('rental was already returned');
+    if (!rental._id) return res.status(404).send('rental was not found');
+    if (rental.alreadyReturned) return res.status(400).send('rental was already returned');
 
     res.send(rental);
 });
