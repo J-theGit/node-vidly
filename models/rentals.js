@@ -85,6 +85,10 @@ async function getMovies(movies) {
 async function returnRental(id) {
     const rental = await Rental.findById(id);
     rental.dateReturned = Date.now();
+    const movie = await Movie.findById(rental.movie[0]._id);
+    const days = (rental.dateReturned - rental.dateOut)/(60*60*24);
+    rental.rentalFee = movie.dailyRentalRate * days;
+    debug('rental', rental);
     return await rental.save();
 }
 
