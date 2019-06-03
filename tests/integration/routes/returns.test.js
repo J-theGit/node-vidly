@@ -104,15 +104,15 @@ describe('/api/returns', () => {
         it('should return the rental when valid return is made', async () => {
             const res = await exec();
 
-            expect(res.body).toHaveProperty('customer', customer);
-            expect(res.body).toHaveProperty('movie', [movie]);
+            expect(res.body).toHaveProperty('customer', customer._id.toHexString());
+            expect(res.body).toHaveProperty('movie', [movie._id.toHexString()]);
             expect(res.body).toHaveProperty('dateOut');
             expect(res.body).toHaveProperty('dateReturned');
             expect(res.body).toHaveProperty('rentalFee');
         });
         
         it('should return 401 when client not logged in', async () => {
-            token = 1;
+            token = '';
             const res = await exec();
 
             expect(res.status).toBe(401);

@@ -93,7 +93,7 @@ async function returnRental(id) {
     try {
         const task = new Fawn.Task()
             .update('rentals', { _id: rental._id }, { 
-                dateReturned: rental.dateReturned, 
+                dateReturned: rental.dateReturned,
                 rentalFee: rental.rentalFee
             });
 
@@ -105,7 +105,7 @@ async function returnRental(id) {
         await task.run();
     }
     catch (e) {
-        throw new Error('Rental was not returned, something went wrong'+e);
+        throw new Error('Rental was not returned, something went wrong');
     }
 
     return await rental;

@@ -1,9 +1,10 @@
 const express = require('express');
 const debug = require('debug')('app:routes:returns');
+const auth = require('../middleware/auth');
 const rentals = require('../models/rentals');
 const router = express.Router();
 
-router.post('/:id', async (req, res) => {
+router.post('/:id', auth, async (req, res) => {
     const rental = await rentals.submit(req.params.id);
     res.status(200).send(rental);
 });
