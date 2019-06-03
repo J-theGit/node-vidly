@@ -12,8 +12,10 @@ describe('/api/returns', () => {
     let server;
     let token;
     let customer;
-    let movie;
-    let movieId;
+    let movie1;
+    let movie2;
+    let movie1Id;
+    let movie2Id;
     let genre;
     let rental;
     let rentalId;
@@ -35,24 +37,25 @@ describe('/api/returns', () => {
         });
         await genre.save();
 
-        movie = new Movie({
-            title: 'movie',
+        movie1 = new Movie({
+            title: 'movie1',
             genre,
             numberInStock: 0,
             dailyRentalRate: 2.20
         });
-        await movie.save();
-        movieId = movie._id;
+        await movie1.save();
+        movie1Id = movie1._id.toHexString();
 
-        rental = new Rental({
-            customer,
-            movie: [movie],
-            dateOut: Date.now()-(60*60*24*7), // 7 days ago
-            dateReturned: null,
-            rentalFee: 0
+        movie2 = new Movie({
+            title: 'movie2',
+            genre,
+            numberInStock: 0,
+            dailyRentalRate: 1.20
         });
-        await rental.save();
-        rentalId = rental._id;
+        await movie2.save();
+        movie2Id = movie2._id.toHexString();
+
+        await setmovies(1);
     });
 
     afterEach(async () => {
@@ -62,6 +65,19 @@ describe('/api/returns', () => {
         await Movie.deleteMany();
         await Genre.deleteMany();
     });
+
+    async function setmovies(numMovies) {
+        await Rental.deleteMany();
+        rental = new Rental({
+            customer,
+            dateOut: Date.now()-(60*60*24*7), // 7 days ago
+            dateReturned: null,
+            rentalFee: 0
+        });
+        rental.movie = (numMovies === 1) ? [movie1] : [movie1, movie2];
+        await rental.save();
+        rentalId = rental._id;
+    }
 
     function exec() {
         return request(server)
@@ -83,7 +99,7 @@ describe('/api/returns', () => {
             expect(returns.dateReturned).not.toBeNull();
         });
 
-        it('should set rentalFee as 15.40 when valid return is made', async () => {
+        it('should set rentalFee as 15.40 when valid return is made with 1 movie', async () => {
             const res = await exec();
             const rental = await Rental.findById(rentalId);
 
@@ -91,21 +107,44 @@ describe('/api/returns', () => {
             expect(rental.rentalFee).toBeCloseTo(15.4);
         });
 
-        it('should increase movie stock and return 1 when valid return is made', async () => {
-            const movieBefore = await Movie.findById(movieId);
+        it('should set rentalFee as 23.80 when valid return is made with 2 movies', async () => {
+            await setmovies();
+            const res = await exec();
+            const rental = await Rental.findById(rentalId);
+
+            expect(res.body.rentalFee).toBeCloseTo(23.8);
+            expect(rental.rentalFee).toBeCloseTo(23.8);
+        });
+
+        it('should increase movie stock and return 1 when valid return is made for 1 movie', async () => {
+            const movieBefore = await Movie.findById(movie1Id);
             expect(movieBefore.numberInStock).toBe(0);
 
             await exec();
-            const movieAfter = await Movie.findById(movieId);
+            const movieAfter = await Movie.findById(movie1Id);
 
             expect(movieAfter.numberInStock).toBe(1);
+        });
+
+        it('should increase movie stock and return 1 when valid return is made for 2 movies', async () => {
+            const movie1Before = await Movie.findById(movie1Id);
+            const movie2Before = await Movie.findById(movie2Id);
+            expect(movie1Before.numberInStock).toBe(0);
+            expect(movie2Before.numberInStock).toBe(0);
+
+            await exec();
+            const movie1After = await Movie.findById(movie1Id);
+            const movie2After = await Movie.findById(movie2Id);
+
+            expect(movie1After.numberInStock).toBe(1);
+            expect(movie2After.numberInStock).toBe(1);
         });
 
         it('should return the rental when valid return is made', async () => {
             const res = await exec();
 
             expect(res.body).toHaveProperty('customer', customer._id.toHexString());
-            expect(res.body).toHaveProperty('movie', [movie._id.toHexString()]);
+            expect(res.body).toHaveProperty('movie', [movie1Id]);
             expect(res.body).toHaveProperty('dateOut');
             expect(res.body).toHaveProperty('dateReturned');
             expect(res.body).toHaveProperty('rentalFee');
