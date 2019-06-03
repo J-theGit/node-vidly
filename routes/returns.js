@@ -6,7 +6,9 @@ const router = express.Router();
 
 router.post('/:id', auth, async (req, res) => {
     const rental = await rentals.submit(req.params.id);
-    res.status(200).send(rental);
+    if (!rental) return res.status(400).send('rental was already returned');
+
+    res.send(rental);
 });
 
 module.exports = router;
