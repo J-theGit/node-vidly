@@ -108,7 +108,7 @@ describe('/api/returns', () => {
         });
 
         it('should set rentalFee as 23.80 when valid return is made with 2 movies', async () => {
-            await setmovies();
+            await setmovies(2);
             const res = await exec();
             const rental = await Rental.findById(rentalId);
 
@@ -127,8 +127,10 @@ describe('/api/returns', () => {
         });
 
         it('should increase movie stock and return 1 when valid return is made for 2 movies', async () => {
+            await setmovies(2);
             const movie1Before = await Movie.findById(movie1Id);
             const movie2Before = await Movie.findById(movie2Id);
+
             expect(movie1Before.numberInStock).toBe(0);
             expect(movie2Before.numberInStock).toBe(0);
 

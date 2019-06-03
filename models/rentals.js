@@ -87,30 +87,27 @@ async function returnRental(id) {
     if (!rental) return { _id: false, alreadyReturned: false };
     if (rental.dateReturned) return { _id: true, alreadyReturned: true };
 
-    const movie = await Movie.findById(rental.movie[0]._id);
-
     rental.dateReturned = Date.now();
     const days = (rental.dateReturned - rental.dateOut)/(60*60*24);
-    rental.rentalFee = movie.dailyRentalRate * days;
 
     try {
-        const task = new Fawn.Task()
-            .update('rentals', { _id: rental._id }, { 
-                dateReturned: rental.dateReturned,
-                rentalFee: rental.rentalFee
+        const task = new Fawn.Task();
+        for (movieId of rental.movie) {
+            const movie = await Movie.findById(movieId);
+            rental.rentalFee += movie.dailyRentalRate * days;
+            task.update('movies', { _id: movie._id }, { 
+                $inc: { numberInStock: 1 } 
             });
-
-        task.update('movies', { _id: movie._id }, 
-        { 
-            $inc: { numberInStock: 1 } 
+        }
+        task.update('rentals', { _id: rental._id }, { 
+            dateReturned: rental.dateReturned,
+            rentalFee: rental.rentalFee
         });
-
         await task.run();
     }
     catch (e) {
         throw new Error('Rental was not returned, something went wrong');
     }
-
     return await rental;
 }
 
