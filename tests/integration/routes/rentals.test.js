@@ -71,16 +71,19 @@ describe('/api/returns', () => {
     describe('POST /:id', () => {
         it('should return 200 when valid return is made', async () => {
             const res = await exec();
+            
             expect(res.status).toBe(200);
         });
 
         it('should set dateReturned as current date when valid return is made', async () => {
             const res = await exec();
+
             expect(res.body.dateReturned).toBeGreaterThan(0);
         });
 
         it('should set rentalFee as 15.40 when valid return is made', async () => {
             const res = await exec();
+
             expect(res.body.rentalFee).toBeCloseTo(15.4);
         });
 
@@ -89,8 +92,8 @@ describe('/api/returns', () => {
             expect(movieBefore.numberInStock).toBe(0);
 
             await exec();
-
             const movieAfter = await Movie.findById(movieId);
+
             expect(movieAfter.numberInStock).toBe(1);
         });
 
@@ -107,26 +110,29 @@ describe('/api/returns', () => {
         it('should return 401 when client not logged in', async () => {
             token = 1;
             const res = await exec();
+
             expect(res.status).toBe(401);
         });
         
         it('should return 400 when rental return was already processed', async () => {
             await exec();
             const res = await exec();
+
             expect(res.status).toBe(400);
         });
 
         it('should return 400 when id is invalid format', async () => {
             rentalId = '1';
             const res = await exec();
+
             expect(res.status).toBe(400);
         });
 
         it('should return 404 when id is not found', async () => {
             rentalId = mongoose.Types.ObjectId().toHexString();
             const res = await exec();
+
             expect(res.status).toBe(404);
         });
-
     });
 });
