@@ -82,6 +82,13 @@ async function getMovies(movies) {
     return result;
 }
 
+async function returnRental(id) {
+    const rental = await Rental.findById(id);
+    rental.dateReturned = Date.now();
+    return await rental.save();
+}
+
 module.exports.get = getRentals;
 module.exports.set = createRental;
+module.exports.submit = returnRental;
 module.exports.Rental = Rental;

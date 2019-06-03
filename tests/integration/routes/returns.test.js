@@ -1,3 +1,4 @@
+const debug = require('debug')('app:tests:routes:returns');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { User } = require('../../../models/users');
@@ -66,19 +67,20 @@ describe('/api/returns', () => {
         return request(server)
             .post('/api/returns/' + rentalId)
             .set('x-auth-token', token)
-
     }
+    
     describe('POST /:id', () => {
         it('should return 200 when valid return is made', async () => {
             const res = await exec();
-            
+
             expect(res.status).toBe(200);
         });
 
         it('should set dateReturned as current date when valid return is made', async () => {
-            const res = await exec();
-
-            expect(res.body.dateReturned).toBeGreaterThan(0);
+            await exec();
+            const returns = await Rental.findById(rentalId);
+            
+            expect(returns.dateReturned).not.toBeNull();
         });
 
         it('should set rentalFee as 15.40 when valid return is made', async () => {
