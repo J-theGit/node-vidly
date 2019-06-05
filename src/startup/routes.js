@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const compression = require('compression');
 
 const genres = require('../../routes/genres');
 const customers = require ('../../routes/customers');
@@ -12,6 +13,7 @@ const error = require('../../middleware/error');
 
 function routes(app) {
     app.use(helmet());
+    app.use(compression());
     app.use(express.json());
     app.use('/api/genres', genres);
     app.use('/api/customers', customers);
