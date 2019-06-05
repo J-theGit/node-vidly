@@ -6,10 +6,9 @@ const Joi = require('joi');
 const debug = require('debug')('app:routes:genres');
 const router = express.Router();
 
-
 function validateGenre(input) {
     const schema = {
-        name: Joi.string().min(3).required()
+        name: Joi.string().min(5).max(50).required()
     };
     return Joi.validate(input, schema);
 }
@@ -39,13 +38,8 @@ router.post('/', auth, admin, async (req, res) => {
     const { error } = validateGenre(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     
-    try {
-        const genre = await genredb.set(req.body.name);
-        res.send(genre);
-    }
-    catch (e) {
-        res.status(500).send('Internal error occured, genre wasn\'t inserted');
-    }
+    const genre = await genredb.set(req.body.name);
+    res.send(genre);
 });
 
 router.put('/:id', auth, admin, async (req, res) => {
@@ -68,15 +62,11 @@ router.delete('/:id', auth, admin, async (req, res) => {
     const { error } = validateId(req.params);
     if (error) return res.status(400).send(error.details[0].message);
 
-    try{
-        const genre = await genredb.delete(req.params.id);
-        if (!genre) return res.status(404).send('genre couldn\'t be found');
     
-        res.send(genre);
-    }
-    catch(e) {
-        res.status(500).send('Internal error occured, genre wasn\'t deleted');
-    }
+    const genre = await genredb.delete(req.params.id);
+    if (!genre) return res.status(404).send('genre couldn\'t be found');
+    
+    res.send(genre);
 });
 
 module.exports = router;

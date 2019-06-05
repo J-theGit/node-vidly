@@ -14,7 +14,7 @@ async function login(input) {
 
     if (hash !== user.password) throw new Error('username or password incorrect');
 
-    return await user.generateToken();
+    return user.generateToken();
 }
 
 module.exports.get = login;

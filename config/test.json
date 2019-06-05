@@ -1,0 +1,6 @@
+{
+    "environment": "test",
+    "private-key": "123",
+    "mongo-endpoint": "mongodb://localhost/",
+    "mongo-database": "vidly-tests"
+}

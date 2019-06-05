@@ -11,7 +11,6 @@ const { mongourl } = require('./db');
 winston.add(new winston.transports.File({ filename: 'app.log' }));
 winston.add(new winston.transports.MongoDB({ db: mongourl, level: 'error' }));
 
-
 process.on('uncaughtException', e => {
     debug(e);
     winston.error(e.message);
