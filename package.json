@@ -9,6 +9,9 @@
     "start": "npm run build-prod && node dist/bundle.js",
     "test": "jest --watchAll --verbose --runInBand --coverage"
   },
+  "engines":{
+    "node": "10.15.3"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
